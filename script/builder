@@ -6,6 +6,7 @@ use Getopt::Long;
 my $profile = $ENV{BUILDER_PROFILE} // 3;
 my $jobs    = $ENV{BUILDER_JOBS}    // 1;
 my $preserved_rebuild    = $ENV{PRESERVED_REBUILD}    // 0;
+my $emerge_defaults_args = $ENV{EMERGE_DEFAULTS_ARGS} // "--accept-properties=-interactive --verbose --oneshot --nospinner --quiet-build=y --quiet-fail --fail-clean=y --complete-graph --buildpkg";
 my @overlays;
 
 GetOptions('layman|overlay:s{,}' => \@overlays);
@@ -129,7 +130,7 @@ system("equo i $_") for @packages_deps;
 
 say "* Ready to compile, finger crossed";
 
-my $rt = system("emerge -j $jobs --buildpkg @packages");
+my $rt = system("emerge $emerge_defaults_args -j $jobs @packages");
 
 if($preserved_rebuild){
 
