@@ -138,7 +138,7 @@ rm -rf /etc/ssh/*_key*
 
 # Configuring for build
 echo "*" > /etc/eix-sync.conf
-eix-sync --quiet
+eix-sync -q
 echo "y" | layman -f -a sabayon
 echo "y" | layman -f -a sabayon-distro
 
