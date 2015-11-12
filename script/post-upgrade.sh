@@ -82,6 +82,9 @@ PACKAGES_TO_ADD=(
 rsync -av -H -A -X --delete-during "rsync://rsync.at.gentoo.org/gentoo-portage/licenses/" "/usr/portage/licenses/"
 ls /usr/portage/licenses -1 | xargs -0 > /etc/entropy/packages/license.accept
 
+# upgrading machine
+equo up && equo u 
+
 # Handling install/removal of packages specified in env
 equo rm --deep --configfiles --force-system "${PACKAGES_TO_REMOVE[@]}"
 equo i "${PACKAGES_TO_ADD[@]}"
