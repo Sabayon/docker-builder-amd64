@@ -13,7 +13,7 @@ ENV HOME /root
 WORKDIR /
 
 # Adding our builder script that will run also as entrypoint
-RUN wget 'https://raw.githubusercontent.com/mudler/sabayon-builder-script/master/builder' -O /builder && chmod +x /builder
+RUN wget 'https://raw.githubusercontent.com/Sabayon/docker-builder-amd64/master/script/builder' -O /builder && chmod +x /builder
 
 # Define standard volumes
 VOLUME ["/usr/portage", "/usr/portage/distfiles", "/usr/portage/packages", "/var/lib/entropy/client/packages"]
