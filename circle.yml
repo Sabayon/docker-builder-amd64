@@ -6,12 +6,11 @@ dependencies:
   override:
     - docker info
     - docker build -t sabayon/builder-amd64 .
-    - docker run sabayon/builder-amd64 true
+    - docker run sabayon/builder-amd64 true || true
     - docker export $(docker ps -aq | xargs echo | cut -d ' ' -f 1) | docker import - sabayon/builder-amd64-squashed
 test:
   override:
-    - docker run sabayon/builder-amd64-squashed true
-
+    - docker run sabayon/builder-amd64-squashed app-text/tree
 deployment:
   hub:
     branch: master
