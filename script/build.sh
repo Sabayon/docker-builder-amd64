@@ -11,7 +11,7 @@ docker export $( docker ps -aq | xargs echo | cut -d ' ' -f 1) | docker import -
 mkdir -p ~/image
 mkdir -p ~/imagesquashed
 
-cat <<- EOF > /image/Dockerfile
+cat <<- 'EOF' > /image/Dockerfile
 FROM sabayon/spinbase-amd64-tmp
 MAINTAINER mudler <mudler@sabayonlinux.org>
 # Define standard volumes

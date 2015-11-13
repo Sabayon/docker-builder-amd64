@@ -138,6 +138,7 @@ rm -rf /etc/ssh/*_key*
 
 # Configuring for build
 echo "*" > /etc/eix-sync.conf
+emerge-webrsync
 eix-sync
 echo "y" | layman -f -a sabayon
 echo "y" | layman -f -a sabayon-distro
