@@ -7,6 +7,7 @@ my $profile = $ENV{BUILDER_PROFILE} // 3;
 my $jobs    = $ENV{BUILDER_JOBS}    // 1;
 my $preserved_rebuild    = $ENV{PRESERVED_REBUILD}    // 0;
 my $emerge_defaults_args = $ENV{EMERGE_DEFAULTS_ARGS} // "--accept-properties=-interactive --verbose --oneshot --nospinner --quiet-build=y --quiet-fail --fail-clean=y --complete-graph --buildpkg";
+
 my @overlays;
 
 GetOptions('layman|overlay:s{,}' => \@overlays);
@@ -90,6 +91,7 @@ priority=9999
 auto-sync = no' > /etc/portage/repos.conf/local.conf
 }; # Declaring the repo and giving priority
 
+system("mkdir -p /usr/portage/distfiles/git3-src");
 # sync portage and overlays
 system("layman -S;emerge --sync --quiet");
 
