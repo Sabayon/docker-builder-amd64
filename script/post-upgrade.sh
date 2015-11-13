@@ -83,7 +83,7 @@ rsync -av -H -A -X --delete-during "rsync://rsync.at.gentoo.org/gentoo-portage/l
 ls /usr/portage/licenses -1 | xargs -0 > /etc/entropy/packages/license.accept
 
 # upgrading machine
-equo up && equo u 
+equo up && equo u
 
 # Handling install/removal of packages specified in env
 equo rm --deep --configfiles --force-system "${PACKAGES_TO_REMOVE[@]}"
@@ -138,7 +138,7 @@ rm -rf /etc/ssh/*_key*
 
 # Configuring for build
 echo "*" > /etc/eix-sync.conf
-eix-sync -q
+eix-sync
 echo "y" | layman -f -a sabayon
 echo "y" | layman -f -a sabayon-distro
 
