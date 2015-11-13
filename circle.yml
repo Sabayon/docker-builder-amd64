@@ -5,10 +5,7 @@ machine:
 dependencies:
   override:
     - docker info
-    - docker build -t sabayon/builder-amd64 .
-    - docker run sabayon/builder-amd64 app-text/tree
-    - docker export $( docker ps -aq | xargs echo | cut -d ' ' -f 1) | docker import - sabayon/builder-amd64-squashed
-    - docker export $( docker ps -aq | xargs echo | cut -d ' ' -f 1) | docker import - sabayon/builder-amd64
+    - ./script/build.sh
 test:
   override:
     - docker run sabayon/builder-amd64-squashed app-text/tree
