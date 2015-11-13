@@ -11,8 +11,8 @@ docker export $( docker ps -aq | xargs echo | cut -d ' ' -f 1) | docker import -
 mkdir -p ~/image
 mkdir -p ~/imagesquashed
 
-cat <<- 'EOF' > /image/Dockerfile
-FROM sabayon/spinbase-amd64-tmp
+cat <<- 'EOF' > ~/image/Dockerfile
+FROM sabayon/builder-amd64-tmp
 MAINTAINER mudler <mudler@sabayonlinux.org>
 # Define standard volumes
 VOLUME ["/usr/portage", "/usr/portage/distfiles", "/usr/portage/packages", "/var/lib/entropy/client/packages"]
@@ -20,7 +20,8 @@ VOLUME ["/usr/portage", "/usr/portage/distfiles", "/usr/portage/packages", "/var
 # Define default command.
 ENTRYPOINT ["/builder"]
 EOF
-cp -rfv /image/Dockerfile /imagesquashed
+
+cp -rfv ~/image/Dockerfile ~/imagesquashed
 
 docker build -t sabayon/builder-amd64 ~/image
 docker build -t sabayon/builder-amd64-squashed ~/imagesquashed
