@@ -6,8 +6,8 @@ dependencies:
   override:
     - docker info
     - docker build -t sabayon/builder-amd64 .
-    - docker export $(docker run -i -t sabayon/builder-amd64 /builder && docker ps -aq | xargs echo | cut -d ' ' -f 1) | docker import - sabayon/builder-amd64-squashed
-
+    - docker run sabayon/builder-amd64 true
+    - docker export $(docker ps -aq | xargs echo | cut -d ' ' -f 1) | docker import - sabayon/builder-amd64-squashed
 test:
   override:
     - docker run sabayon/builder-amd64-squashed true
@@ -18,4 +18,3 @@ deployment:
     commands:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push sabayon/builder-amd64-squashed
-
