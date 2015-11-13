@@ -1,4 +1,4 @@
-FROM sabayon/spinbase-amd64-squashed
+FROM sabayon/spinbase-amd64
 
 MAINTAINER mudler <mudler@sabayonlinux.org>
 
