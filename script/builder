@@ -93,7 +93,7 @@ auto-sync = no' > /etc/portage/repos.conf/local.conf
 
 system("mkdir -p /usr/portage/distfiles/git3-src");
 # sync portage and overlays
-system("layman -S;emerge --sync --quiet");
+system("layman -S;emerge --sync");
 
 
 qx|eselect profile set $profile|;
