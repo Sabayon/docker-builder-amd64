@@ -5,6 +5,7 @@ use Getopt::Long;
 
 my $profile = $ENV{BUILDER_PROFILE} // 3;
 my $jobs    = $ENV{BUILDER_JOBS}    // 1;
+my $use_equo = $ENV{USE_EQUO} // 1;
 my $preserved_rebuild    = $ENV{PRESERVED_REBUILD}    // 0;
 my $emerge_defaults_args = $ENV{EMERGE_DEFAULTS_ARGS} // "--accept-properties=-interactive --verbose --oneshot --nospinner --quiet-build=y --quiet-fail --fail-clean=y --complete-graph --buildpkg";
 
@@ -99,7 +100,7 @@ system("layman -S;emerge --sync");
 qx|eselect profile set $profile|;
 qx{ls /usr/portage/licenses -1 | xargs -0 > /etc/entropy/packages/license.accept}
     ;    #HAHA
-system("equo up && equo u"); # Better don't be behind
+system("equo up && equo u") if $use_equo; # Better don't be behind
 qx|echo 'ACCEPT_LICENSE="*"' >> /etc/portage/make.conf|;    #just plain evil.
 
 
@@ -120,15 +121,18 @@ my @packages = @ARGV;
 #my @packages_deps = depgraph_atom(@packages);
 #push(@packages_deps,depgraph(@packages));
 #say "Installing those deps with equo",@packages_deps;
-my @packages_deps;
-foreach my $p (@packages){
-        push(@packages_deps,package_deps($p,1,1));
-        push(@packages_deps,package_deps($p,1,0));
-}
-@packages_deps =  grep { defined() and length() } @packages_deps; #cleaning
-say "Installing those deps with equo", @packages_deps;
 
-system("equo i $_") for @packages_deps;
+if ($use_equo){
+	my @packages_deps;
+	foreach my $p (@packages){
+	        push(@packages_deps,package_deps($p,1,1));
+	        push(@packages_deps,package_deps($p,1,0));
+	}
+	@packages_deps =  grep { defined() and length() } @packages_deps; #cleaning
+	say "Installing those deps with equo", @packages_deps;
+
+	system("equo i $_") for @packages_deps;
+}
 
 say "* Ready to compile, finger crossed";
 
