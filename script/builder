@@ -10,6 +10,10 @@ my $preserved_rebuild    = $ENV{PRESERVED_REBUILD}    // 0;
 my $emerge_defaults_args = $ENV{EMERGE_DEFAULTS_ARGS} // "--accept-properties=-interactive --verbose --oneshot --nospinner --quiet-build=y --quiet-fail --fail-clean=y --complete-graph --buildpkg";
 $ENV{FEATURES} = $ENV{FEATURES} // "parallel-fetch protect-owned compressdebug splitdebug -userpriv";
 
+my $equo_install_atoms    = $ENV{EQUO_INSTALL_ATOMS}    // 1;
+my $equo_install_version    = $ENV{EQUO_INSTALL_VERSION}    // 0;
+my $equo_split_install = $ENV{EQUO_SPLIT_INSTALL} // 0;
+
 my @overlays;
 
 GetOptions('layman|overlay:s{,}' => \@overlays);
@@ -126,13 +130,17 @@ my @packages = @ARGV;
 if ($use_equo){
 	my @packages_deps;
 	foreach my $p (@packages){
-	        push(@packages_deps,package_deps($p,1,1));
-	        push(@packages_deps,package_deps($p,1,0));
+	        push(@packages_deps,package_deps($p,1,1)) if $equo_install_atoms;
+	        push(@packages_deps,package_deps($p,1,0)) if $equo_install_version;
 	}
 	@packages_deps =  grep { defined() and length() } @packages_deps; #cleaning
 	say "Installing those deps with equo", @packages_deps;
 
-	system("equo i $_") for @packages_deps;
+	if ( $equo_split_install) {
+		system("equo i $_") for @packages_deps;
+	} else {
+		system("equo i @packages_deps");
+	}
 }
 
 say "* Ready to compile, finger crossed";
