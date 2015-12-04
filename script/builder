@@ -105,7 +105,7 @@ system("layman -S;emerge --sync");
 qx|eselect profile set $profile|;
 qx{ls /usr/portage/licenses -1 | xargs -0 > /etc/entropy/packages/license.accept}
     ;    #HAHA
-system("equo up && equo u") if $use_equo; # Better don't be behind
+system("equo repo mirrorsort sabayonlinux.org;equo up && equo u") if $use_equo; # Better don't be behind
 qx|echo 'ACCEPT_LICENSE="*"' >> /etc/portage/make.conf|;    #just plain evil.
 
 
