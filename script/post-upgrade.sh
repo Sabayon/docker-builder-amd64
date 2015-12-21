@@ -124,6 +124,13 @@ done
 # Merging defaults configurations
 echo -5 | equo conf update
 
+pushd /opt/sabayon-build/conf/intel/portage
+
+rm -rfv make.conf
+ln -s make.conf.amd64 make.conf
+
+popd
+
 # Writing package list file
 equo q list installed -qv > /etc/sabayon-pkglist
 
