@@ -87,14 +87,14 @@ Exporting those files to your container is a matter of adding an argument to you
     -v /my/path/custom.keywords:/opt/sabayon-build/conf/intel/portage/package.keywords/custom.keywords
 
 
-In this way you tell to docker to mount your custom.* file inside /opt/sabayon-build/conf/intel/portage/package.*/custom.* inside the container. 
+In this way you tell to docker to mount your custom.* file inside /opt/sabayon-build/conf/intel/portage/package.*/custom.* inside the container.
 
 Keep in mind that the container have the portage directory located at /opt/sabayon-build/conf/intel/portage/ ; the /etc/portage folder is then symlinked to it.
 
 **Attention!** Remember also to use absolute paths or docker will fail to mount your files in the container.
 
 
-## ENV VARIABLES
+## ENVIRONMENT VARIABLES
 
 You can tweak the default behavior of the script setting those env variables with docker.
 
@@ -103,9 +103,10 @@ You can tweak the default behavior of the script setting those env variables wit
 - **PRESERVED_REBUILD**: 1/0 to Enable/Disable preserved rebuild compilation
 - **EMERGE_DEFAULTS_ARGS**: a list of commands that you might want to specify
 - **FEATURES**: you can override default FEATURES (like in Portage's make.conf)
+- **ARTIFACTS_DIR**: Copy emerge output files in this directory inside the container after all went as expected
 
 Sabayon related:
-- USE_EQUO: 1/0 Enable/Disable equo for installing the package dependencies (if you plan to use a pure gentoo repository, set it to 0, but the compilation process would be much longer)
+- **USE_EQUO: 1/0** Enable/Disable equo for installing the package dependencies (if you plan to use a pure gentoo repository, set it to 0, but the compilation process would be much longer)
 - **EQUO_INSTALL_ATOMS**: Install the latest version of the dependency packages
 - **EQUO_INSTALL_VERSION**: Install the specific version of the dependency packages
 - **EQUO_SPLIT_INSTALL**: Install all the packages separately one by one
