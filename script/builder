@@ -13,6 +13,7 @@ $ENV{FEATURES} = $ENV{FEATURES} // "parallel-fetch protect-owned compressdebug s
 my $equo_install_atoms    = $ENV{EQUO_INSTALL_ATOMS}    // 1;
 my $equo_install_version    = $ENV{EQUO_INSTALL_VERSION}    // 0;
 my $equo_split_install = $ENV{EQUO_SPLIT_INSTALL} // 0;
+my $artifacts_folder = $ENV{ARTIFACTS_DIR};
 
 my @overlays;
 
@@ -24,6 +25,7 @@ if (@ARGV==0) {
 
 $ENV{LC_ALL} = "en_US.UTF-8";    #here be dragons
 
+# Input: package, depth, and atom. Package: sys-fs/foobarfs, Depth: 1 (depth of the package tree) , Atom: 1/0 (enable disable atom output)
 sub package_deps {
     my $package = shift;
     my $depth   = shift // 1;
@@ -33,19 +35,27 @@ sub package_deps {
         qx/equery -C -q g --depth=$depth $package/;    #depth=0 it's all
 }
 
-sub depgraph {
-    map { $_ =~ s/^.*\]|\:\:.*$|\s|\n//g;  $_ }
-        grep {/\]/} qx/emerge -poq --color n @_/;
+# Input: package (sys-fs/foobarfs)
+# Output: Array of packages to be installed, that aren't installed in a Sabayon machine
+sub calculate_missing {
+    my $package  = shift;
+    my @Packages = 		package_deps($package,1,1);    #depth=0 it's all
+    my @Installed_Packages = qx/equo q --quiet list installed | awk '{print $4}'/;
+    chomp(@Installed_Packages);
+    my %packs = map { $_ => 1 } @Installed_Packages;
+    my @to_install = uniq( grep( !defined $packs{$_}, @Packages ) );
+    return @to_install;
 }
 
-sub depgraph_atom {
-    map { $_ =~ s/^.*\]|\:\:.*$|\s|\n//g; &atom($_); $_ } grep {/\]/}
-        qx/emerge -poq --color n @_/;    #depth=0 it's all
-}
-
-# Input : complete gentoo package ($P)
+# Input : complete gentoo package (sys-fs/foobarfs-1.9.2)
+# Output: atom form (sys-fs/foobarfs)
 sub atom { s/-[0-9]{1,}.*$//; }
 
+# Input: Array
+# Output: array with unique elements
+sub uniq { keys %{ { map { $_ => 1 } @_ } }; }
+
+# A barely print replacement
 sub say { print join( "\n", @_ ) . "\n"; }
 
 sub help {
@@ -101,41 +111,23 @@ system("mkdir -p /usr/portage/distfiles/git3-src");
 # sync portage and overlays
 system("layman -S;emerge --sync");
 
-
+# preparing for MOAR automation
 qx|eselect profile set $profile|;
 qx{ls /usr/portage/licenses -1 | xargs -0 > /etc/entropy/packages/license.accept}
     ;    #HAHA
 system("equo repo mirrorsort sabayonlinux.org;equo up && equo u") if $use_equo; # Better don't be behind
-qx|echo 'ACCEPT_LICENSE="*"' >> /etc/portage/make.conf|;    #just plain evil.
-
-
-# Separating packages from args
-#my @args;
-#my @packages;
-#foreach my $value (@ARGV) {
-#    if ( $value =~ /^\-/ ) {
-#        push( @args, $value );
-#    }
-#    else {
-#        push( @packages, $value );
-#    }
-#}
+qx|echo 'ACCEPT_LICENSE="*"' >> /etc/portage/make.conf|;    #just plain evil
 
 my @packages = @ARGV;
-
-#my @packages_deps = depgraph_atom(@packages);
-#push(@packages_deps,depgraph(@packages));
-#say "Installing those deps with equo",@packages_deps;
 
 if ($use_equo){
 	my @packages_deps;
 	foreach my $p (@packages){
-	        push(@packages_deps,package_deps($p,1,1)) if $equo_install_atoms;
-	        push(@packages_deps,package_deps($p,1,0)) if $equo_install_version;
+	        push(@packages_deps,calculate_missing($p,1)) if $equo_install_atoms;
+					push(@packages_deps,package_deps($p,1,0)) if $equo_install_version;
 	}
 	@packages_deps =  grep { defined() and length() } @packages_deps; #cleaning
-	say "Installing those deps with equo", @packages_deps;
-
+	say "","Installing missing deps with equo", @packages_deps,"";
 	if ( $equo_split_install) {
 		system("equo i $_") for @packages_deps;
 	} else {
@@ -147,10 +139,15 @@ say "* Ready to compile, finger crossed";
 
 my $rt = system("emerge $emerge_defaults_args -j $jobs @packages");
 
+my $return = $rt >> 8;
+
 if($preserved_rebuild){
 
 	system("emerge -j $jobs --buildpkg \@preserved-rebuild");
 
 }
 
-exit($rt >> 8);
+# Copy files to artifacts folder
+system("mkdir -p $artifacts_folder;cp -rfv /usr/portage/packages $artifacts_folder") if ($artifacts_folder and !$return );
+
+exit($return);
