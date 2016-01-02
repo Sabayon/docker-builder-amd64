@@ -35,16 +35,35 @@ sub package_deps {
         qx/equery -C -q g --depth=$depth $package/;    #depth=0 it's all
 }
 
+#Input: nothing
+#Output: returns all available packages across all the repository installed in the machine
+sub available_packages {
+	my @packages;
+	my @repos=qx|equo repo list -q|;
+	chomp(@repos);
+	push(@packages,qx|equo q list available -q $_|) for @repos;
+	chomp(@packages);
+	return @packages;
+}
+
 # Input: package (sys-fs/foobarfs)
 # Output: Array of packages to be installed, that aren't installed in a Sabayon machine
 sub calculate_missing {
     my $package  = shift;
-    my @Packages = 		package_deps($package,1,1);    #depth=0 it's all
-    my @Installed_Packages = qx/equo q --quiet list installed | awk '{print $4}'/;
+
+    # Getting the package dependencies and the installed packages
+    my @Packages = 		package_deps($package,1,1);
+    my @Installed_Packages = qx/equo q --quiet list installed/;
     chomp(@Installed_Packages);
-    my %packs = map { $_ => 1 } @Installed_Packages;
-    my @to_install = uniq( grep( !defined $packs{$_}, @Packages ) );
-    return @to_install;
+
+    #taking only the 4th column of output as key of the hashmap
+    my %installed_packs = map { (split(/\s/,$_))[3] => 1 } @Installed_Packages;
+		my %available_packs = map { $_ =>1 } available_packages();
+
+    # removing from packages the one that are already installed and keeping only the available in the entropy repositories
+    my @to_install = grep( defined $available_packs{$_}, uniq( grep( !defined $installed_packs{$_}, @Packages  )) );
+
+    return grep { length } @to_install;
 }
 
 # Input : complete gentoo package (sys-fs/foobarfs-1.9.2)
