@@ -18,7 +18,7 @@ my $artifacts_folder     = $ENV{ARTIFACTS_DIR};
 
 my @overlays;
 
-GetOptions( 'layman|overlay:s{,}' => \@overlays );
+GetOptions( 'layman|overlay:s{,}' => \@overlays, 'equo|install:s{,}' => \@equo_install  );
 
 if ( @ARGV == 0 ) {
     help();
@@ -86,6 +86,7 @@ sub say { print join( "\n", @_ ) . "\n"; }
 sub help {
     say "-> You should feed me with something", "", "Examples:", "",
       "\t$0 app-text/tree", "\t$0 plasma-meta --layman kde", "",
+      "\t$0 app-foo/foobar --equo foo-misc/foobar --equo net-foo/foobar --layman foo --layman bar foo",
       "**************************", "",
 "You can supply multiple overlays as well: $0 plasma-meta --layman kde plab",
       "";
@@ -165,10 +166,10 @@ if ($use_equo) {
     @packages_deps = grep { defined() and length() } @packages_deps;   #cleaning
     say "", "Installing missing deps with equo", @packages_deps, "";
     if ($equo_split_install) {
-        system("equo i $_") for @packages_deps;
+        system("equo i $_") for (@packages_deps,@equo_install);
     }
     else {
-        system("equo i @packages_deps");
+        system("equo i @packages_deps @equo_install");
     }
 }
 
