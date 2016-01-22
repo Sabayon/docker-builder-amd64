@@ -166,10 +166,10 @@ if ($use_equo) {
     @packages_deps = grep { defined() and length() } @packages_deps;   #cleaning
     say "", "Installing missing deps with equo", @packages_deps, "";
     if ($equo_split_install) {
-        system("equo i $_") for (@packages_deps,@equo_install);
+        system("equo i --bdeps $_") for (@packages_deps,@equo_install);
     }
     else {
-        system("equo i @packages_deps @equo_install");
+        system("equo i --bdeps @packages_deps @equo_install");
     }
 }
 
