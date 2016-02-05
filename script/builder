@@ -30,7 +30,7 @@ $ENV{LC_ALL} = "en_US.UTF-8";    #here be dragons
 # Input: package, depth, and atom. Package: sys-fs/foobarfs, Depth: 1 (depth of the package tree) , Atom: 1/0 (enable disable atom output)
 sub package_deps {
     my $package = shift;
-    my $depth   = shift // 1;
+    my $depth   = shift // 1;  # defaults to 1 level of depthness of the tree
     my $atom    = shift // 0;
     return
       map { $_ =~ s/\[.*\]|\s//g; &atom($_) if $atom; $_ }
@@ -52,11 +52,14 @@ sub available_packages {
 # Output: Array of packages to be installed, that aren't installed in a Sabayon machine
 sub calculate_missing {
     my $package = shift;
+    my $depth = shift;
 
     # Getting the package dependencies and the installed packages
-    my @Packages = package_deps( $package, 1, 1 );
+    say "[$package] Getting the package dependencies and the installed packages"
+    my @Packages = package_deps( $package, $depth, 1 );
     my @Installed_Packages = qx/equo q --quiet list installed/;
     chomp(@Installed_Packages);
+    say "[$package] Getting the package dependencies and the installed packages"
 
     #taking only the 4th column of output as key of the hashmap
     my %installed_packs =
@@ -66,8 +69,10 @@ sub calculate_missing {
 # removing from packages the one that are already installed and keeping only the available in the entropy repositories
     my @to_install = grep( defined $available_packs{$_},
         uniq( grep( !defined $installed_packs{$_}, @Packages ) ) );
+    @to_install=grep { length } @to_install;
+    say "[$package] packages that will be installed with equo: @to_install" if @to_install>0;
 
-    return grep { length } @to_install;
+    return @to_install;
 }
 
 # Input : complete gentoo package (sys-fs/foobarfs-1.9.2)
@@ -158,13 +163,15 @@ my @packages = @ARGV;
 if ($use_equo) {
     my @packages_deps;
     foreach my $p (@packages) {
-        push( @packages_deps, calculate_missing( $p, 1 ) )
+      say "[$p] Getting the package dependencies which aren't already installed on the system.. ''"
+        push( @packages_deps, calculate_missing( $p , 2) )
           if $equo_install_atoms;
-        push( @packages_deps, package_deps( $p, 1, 0 ) )
+        push( @packages_deps, package_deps( $p, 2, 0 ) )
           if $equo_install_version;
+      say "[$p] Done ''"
     }
     @packages_deps = grep { defined() and length() } @packages_deps;   #cleaning
-    say "", "Installing missing deps with equo", @packages_deps, "";
+    say "", "[install] Installing missing dependencies with equo", @packages_deps, "";
     if ($equo_split_install) {
         system("equo i --bdeps $_") for (@packages_deps,@equo_install);
     }
