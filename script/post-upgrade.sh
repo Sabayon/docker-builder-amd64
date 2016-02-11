@@ -63,6 +63,7 @@ FILES_TO_REMOVE=(
 PACKAGES_TO_ADD=(
     "app-eselect/eselect-bzimage"
     "app-text/pastebunz"
+    "app-misc/sabayon-devkit"
     "app-admin/perl-cleaner"
     "sys-apps/grep"
     "sys-kernel/sabayon-sources"
