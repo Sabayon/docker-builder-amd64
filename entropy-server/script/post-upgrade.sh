@@ -13,6 +13,7 @@ FILES_TO_REMOVE=(
 
 PACKAGES_TO_ADD=(
     "sys-apps/entropy-server"
+    "app-crypt/gnupg"
 )
 
 rsync -av -H -A -X --delete-during "rsync://rsync.at.gentoo.org/gentoo-portage/licenses/" "/usr/portage/licenses/"
