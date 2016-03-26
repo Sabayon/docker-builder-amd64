@@ -79,6 +79,7 @@ PACKAGES_TO_ADD=(
     "net-misc/openssh"
     "sys-devel/automake"
     "app-admin/enman"
+    "sys-devel/distcc"
 )
 
 rsync -av -H -A -X --delete-during "rsync://rsync.at.gentoo.org/gentoo-portage/licenses/" "/usr/portage/licenses/"
