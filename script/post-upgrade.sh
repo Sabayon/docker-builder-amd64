@@ -1,4 +1,5 @@
 #!/bin/bash
+export ACCEPT_LICENSE=*
 
 PACKAGES_TO_REMOVE=(
     "app-admin/sudo"
@@ -81,9 +82,6 @@ PACKAGES_TO_ADD=(
     "app-admin/enman"
     "sys-devel/distcc"
 )
-
-rsync -av -H -A -X --delete-during "rsync://rsync.at.gentoo.org/gentoo-portage/licenses/" "/usr/portage/licenses/"
-ls /usr/portage/licenses -1 | xargs -0 > /etc/entropy/packages/license.accept
 
 # upgrading machine
 equo up && equo u
