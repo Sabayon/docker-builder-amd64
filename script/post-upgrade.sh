@@ -127,10 +127,13 @@ done
 # Merging defaults configurations
 echo -5 | equo conf update
 
-pushd /opt/sabayon-build/conf/intel/portage
+pushd /etc/portage
+git fetch --all
+git checkout master
+git reset --hard origin/master
 
 rm -rfv make.conf
-ln -s make.conf.amd64 make.conf
+ln -sf make.conf.amd64 make.conf
 
 popd
 
