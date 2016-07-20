@@ -97,7 +97,8 @@ layman-updater -R
 
 # Configuring repoman
 mkdir -p /usr/portage/distfiles/ && wget http://www.gentoo.org/dtd/metadata.dtd -O /usr/portage/distfiles/metadata.dtd
-
+chown -R root:portage /usr/portage/distfiles/
+chmod g+w /usr/portage/distfiles/
 # Upgrading kernel to latest version
 kernel_target_pkg="sys-kernel/linux-sabayon"
 
