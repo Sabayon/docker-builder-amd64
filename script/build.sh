@@ -18,7 +18,7 @@ MAINTAINER mudler <mudler@sabayonlinux.org>
 VOLUME ["/usr/portage", "/usr/portage/distfiles", "/usr/portage/packages", "/var/lib/entropy/client/packages"]
 
 # Define default command.
-ENTRYPOINT ["/tini", "--", "/usr/sbin/builder"]
+ENTRYPOINT ["/usr/bin/tini", "--", "/usr/sbin/builder"]
 EOF
 
 cp -rfv ~/image/Dockerfile ~/imagesquashed
