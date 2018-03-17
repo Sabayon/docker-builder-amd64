@@ -82,6 +82,7 @@ PACKAGES_TO_ADD=(
     "sys-devel/automake"
     "app-admin/enman"
     "sys-devel/distcc"
+    "sys-apps/entropy-server"
 )
 
 # upgrading machine
