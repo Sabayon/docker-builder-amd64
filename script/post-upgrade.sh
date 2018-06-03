@@ -25,10 +25,6 @@ PACKAGES_TO_REMOVE=(
     "x11-apps/xset"
     "x11-themes/hicolor-icon-theme"
     "media-libs/tiff"
-    "app-eselect/eselect-lcdfilter"
-    "app-eselect/eselect-mesa"
-    "app-eselect/eselect-opengl"
-    "app-eselect/eselect-qtgraphicssystem"
     "x11-libs/pixman"
     "x11-libs/libvdpau"
     "x11-libs/libxshmfence"
@@ -88,7 +84,12 @@ PACKAGES_TO_ADD=(
 equo up && equo u
 
 # Handling install/removal of packages specified in env
-equo rm --deep --configfiles --force-system "${PACKAGES_TO_REMOVE[@]}"
+for i in "${PACKAGES_TO_REMOVE[@]}"
+do
+	echo "===== Remove $i ====="
+    equo rm --deep --configfiles --force-system "$i"
+done
+
 equo i "${PACKAGES_TO_ADD[@]}"
 
 # Configuring layman
