@@ -22,7 +22,6 @@ PACKAGES_TO_REMOVE=(
     "dev-lang/ruby"
     "app-editors/vim"
     "dev-util/gtk-doc-am"
-    "media-gfx/graphite2"
     "x11-apps/xset"
     "x11-themes/hicolor-icon-theme"
     "media-libs/tiff"
