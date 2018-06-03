@@ -25,7 +25,6 @@ PACKAGES_TO_REMOVE=(
     "x11-apps/xset"
     "x11-themes/hicolor-icon-theme"
     "media-libs/tiff"
-    "x11-libs/libvdpau"
     "x11-libs/libxshmfence"
     "x11-libs/libXxf86vm"
     "x11-libs/libXinerama"
