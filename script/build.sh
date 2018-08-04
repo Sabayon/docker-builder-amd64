@@ -3,7 +3,7 @@ set -o nounset
 set -o errexit
 
 
-docker build -t sabayon/builder-amd64 .
+docker build --no-cache -t sabayon/builder-amd64 .
 docker run sabayon/builder-amd64 true || true
 docker export $( docker ps -aq | xargs echo | cut -d ' ' -f 1) | docker import - sabayon/builder-amd64-tmp
 
