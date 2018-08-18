@@ -1,0 +1,12 @@
+script:
+   - set -e
+   - source storage/env
+   - ./script/build.sh
+   - docker login -u $DOCKER_USER -p $DOCKER_PASS
+   - docker push sabayon/builder-amd64
+directory: "/"
+task: "docker_execute"
+artefact_path: "artifacts"
+storage: "9317096982217158"
+storage_path: "storage"
+image: "sabayon/builder-amd64"
