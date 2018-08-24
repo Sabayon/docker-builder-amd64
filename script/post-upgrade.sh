@@ -2,7 +2,6 @@
 export ACCEPT_LICENSE=*
 
 PACKAGES_TO_REMOVE=(
-    "app-admin/sudo"
     "x11-libs/gtk+:3"
     "x11-libs/gtk+:2"
     "dev-db/mariadb"
