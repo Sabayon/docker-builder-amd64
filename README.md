@@ -1,7 +1,5 @@
 # Sabayon Builder: a Docker Project #
 
-[![Circle CI](https://circleci.com/gh/Sabayon/docker-builder-amd64.svg?style=svg)](https://circleci.com/gh/Sabayon/docker-builder-amd64)
-
 Attention! It's under strong development
 
 State: Alpha
