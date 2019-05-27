@@ -1,5 +1,6 @@
 #!/bin/bash
 export ACCEPT_LICENSE=*
+export ETP_NONINTERACTIVE=1
 
 PACKAGES_TO_REMOVE=(
     "x11-libs/gtk+:3"
@@ -67,6 +68,12 @@ PACKAGES_TO_ADD=(
     "sys-devel/distcc"
     "sys-apps/entropy-server"
 )
+
+# Install enman for devel repo
+equo i enman
+
+# Add scr devel repository
+enman add devel
 
 # upgrading machine
 equo up && equo u
