@@ -9,13 +9,12 @@ PACKAGES_TO_REMOVE=(
     "sys-fs/ntfs3g"
     "app-accessibility/at-spi2-core"
     "app-accessibility/at-spi2-atk"
-    "sys-devel/base-gcc:4.7"
-    "sys-devel/gcc:4.7"
     "net-print/cups"
     "dev-util/gtk-update-icon-cache"
     "dev-qt/qtscript"
-    "dev-qt/qtchooser"
-    "dev-qt/qtcore"
+    # Remove qtchooser force removing of entropy. I disable it for now
+    #"dev-qt/qtchooser"
+    #"dev-qt/qtcore"
     "app-shells/zsh"
     "app-shells/zsh-pol-config"
     "dev-db/mysql-init-scripts"
@@ -68,6 +67,58 @@ PACKAGES_TO_ADD=(
     "sys-devel/distcc"
     "sys-apps/entropy-server"
 )
+
+
+check_brokenlinks () {
+
+  wget https://raw.githubusercontent.com/Sabayon/devkit/develop/sabayon-brokenlinks -O /usr/bin/sabayon-brokenlinks
+  chmod a+x /usr/bin/sabayon-brokenlinks
+
+  sabayon-brokenlinks --force
+
+  rm /usr/bin/sabayon-brokenlinks
+}
+
+update_mirrors_list () {
+
+  wget https://raw.githubusercontent.com/Sabayon/sbi-tasks/master/infra/mirrors.yml -O /tmp/mirrors.yml
+  wget https://raw.githubusercontent.com/Sabayon/sbi-tasks/master/infra/scripts/sabayon-repo-generator -O /tmp/sabayon-repo-generator
+  chmod a+x /tmp/sabayon-repo-generator
+
+  local f=""
+  local descr=""
+  local name=""
+  local reposdir="/etc/entropy/repositories.conf.d"
+  local repofiles=(
+    "entropy_sabayon-limbo"
+    "entropy_sabayonlinux.org"
+    "entropy_sabayon-weekly"
+  )
+
+  for repo in ${repofiles[@]} ; do
+    if [ -e "${reposdir}/${repo}" ] ; then
+      f=${reposdir}/${repo}
+    else
+      f=${reposdir}/_${repo}
+    fi
+
+    if [[ ${repo} =~ .*limbo* ]] ; then
+      descr="Sabayon Limbo Testing Repository"
+    else
+      descr="Sabayon Linux Official Repository"
+    fi
+
+    name=${repo//entropy_/}
+
+    /tmp/sabayon-repo-generator --mirror-file /tmp/mirrors.yml --descr "${descr}" --name "${name}" --to "${f}"
+
+  done
+
+  rm -v /tmp/sabayon-repo-generator
+  rm -v /tmp/mirrors.yml
+}
+
+update_mirrors_list
 
 # Install enman for devel repo
 equo i enman
@@ -122,6 +173,8 @@ done
 
 # Merging defaults configurations
 echo -5 | equo conf update
+
+check_brokenlinks
 
 pushd /etc/portage
 git fetch --all
